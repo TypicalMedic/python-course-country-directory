@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from typing import Any, Optional, FrozenSet
 
 import aiofiles
@@ -257,10 +258,13 @@ class CapitalCollector(BaseCollector):
             content = await file.read()
 
         result = json.loads(content)
+        
         if result:
             return CapitalInfoDTO(
                 lat=result["coord"]["lat"],
                 lon=result["coord"]["lon"],
+                current_time_UTC=result["dt"],
+                timezone=result["timezone"],
             )
 
         return None

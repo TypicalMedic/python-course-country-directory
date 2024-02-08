@@ -2,6 +2,7 @@
 Функции для формирования выходной информации.
 """
 
+import datetime
 from decimal import ROUND_HALF_UP, Decimal
 
 from collectors.models import LocationInfoDTO
@@ -30,7 +31,9 @@ class Renderer:
 
         return (
             f"Страна: {self.location_info.location.name}",
-            f"Столица: {self.location_info.location.capital}, координаты: ({self.location_info.capital_location.lat}, {self.location_info.capital_location.lon})",
+            f"Столица: {self.location_info.location.capital}",
+            f"  Координаты: ({self.location_info.capital_location.lat}, {self.location_info.capital_location.lon})",
+            f"  {await self._format_time()}",
             f"Регион: {self.location_info.location.subregion}",
             f"Площадь: {self.location_info.location.area} км^2",
             f"Языки: {await self._format_languages()}",
@@ -42,6 +45,20 @@ class Renderer:
             f"  Видимость: {self.location_info.weather.visibility} м",
             f"  Скорость ветра: {self.location_info.weather.wind_speed} м/с",
         )
+
+    
+    async def _format_time(self) -> str:
+        """
+        Форматирование информации о времени в столице.
+
+        :return:
+        """
+        capital_time_unix = self.location_info.capital_location.current_time_UTC + self.location_info.capital_location.timezone
+        capital_time = datetime.datetime.utcfromtimestamp(capital_time_unix).strftime('%Y-%m-%dT%H:%M:%SZ')
+        seconds_in_hour = 3600
+        timezone_UTC = self.location_info.capital_location.timezone//seconds_in_hour
+        return f"Время в столице: {capital_time} (UTC {timezone_UTC})"
+
 
     async def _format_languages(self) -> str:
         """

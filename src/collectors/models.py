@@ -163,11 +163,15 @@ class CapitalInfoDTO(BaseModel):
         WeatherInfoDTO(
             lon=1,
             lat=1,
+            current_time_UTC=int,
+            timezone=int,
         )
     """
 
     lon: float
     lat: float
+    current_time_UTC: Optional[int]
+    timezone: Optional[int]
 
 
 class LocationInfoDTO(BaseModel):
