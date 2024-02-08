@@ -2,7 +2,8 @@
 Описание моделей данных (DTO).
 """
 
-from pydantic import Field, BaseModel
+from pydantic import Field, BaseModel 
+from pydantic.schema import Optional
 
 
 class HashableBaseModel(BaseModel):
@@ -67,6 +68,7 @@ class CountryDTO(BaseModel):
     .. code-block::
 
         CountryDTO(
+            area=124.0,
             capital="Mariehamn",
             alpha2code="AX",
             alt_spellings=[
@@ -96,6 +98,7 @@ class CountryDTO(BaseModel):
         )
     """
 
+    area: Optional[float]
     capital: str
     alpha2code: str
     alt_spellings: list[str]
@@ -149,6 +152,21 @@ class WeatherInfoDTO(BaseModel):
     wind_speed: float
     description: str
 
+class CapitalInfoDTO(BaseModel):
+    """
+    Модель данных о столице.
+
+    .. code-block::
+
+        WeatherInfoDTO(
+            lon=1,
+            lat=1,
+        )
+    """
+
+    lon: float
+    lat: float
+
 
 class LocationInfoDTO(BaseModel):
     """
@@ -158,6 +176,7 @@ class LocationInfoDTO(BaseModel):
 
         LocationInfoDTO(
             location=CountryDTO(
+                area=124.0,
                 capital="Mariehamn",
                 alpha2code="AX",
                 alt_spellings=[
@@ -201,3 +220,4 @@ class LocationInfoDTO(BaseModel):
     location: CountryDTO
     weather: WeatherInfoDTO
     currency_rates: dict[str, float]
+    capital_location : CapitalInfoDTO

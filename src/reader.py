@@ -9,6 +9,7 @@ from collectors.collector import (
     CountryCollector,
     CurrencyRatesCollector,
     WeatherCollector,
+    CapitalCollector,
 )
 from collectors.models import (
     CountryDTO,
@@ -16,6 +17,7 @@ from collectors.models import (
     LocationDTO,
     LocationInfoDTO,
     WeatherInfoDTO,
+    CapitalInfoDTO,
 )
 
 
@@ -37,12 +39,16 @@ class Reader:
             weather = await self.get_weather(
                 LocationDTO(capital=country.capital, alpha2code=country.alpha2code)
             )
+            capital = await self.get_capital_location(
+                LocationDTO(capital=country.capital, alpha2code=country.alpha2code)
+            )
             currency_rates = await self.get_currency_rates(country.currencies)
 
             return LocationInfoDTO(
                 location=country,
                 weather=weather,
                 currency_rates=currency_rates,
+                capital_location=capital
             )
 
         return None
@@ -74,6 +80,16 @@ class Reader:
         :return:
         """
         return await WeatherCollector.read(location=location)
+
+    @staticmethod
+    async def get_capital_location(location: LocationDTO) -> Optional[CapitalInfoDTO]:
+        """
+        Получение данных о погоде.
+
+        :param location: Объект локации для получения данных
+        :return:
+        """
+        return await CapitalCollector.read(location=location)
 
     async def find_country(self, search: str) -> Optional[CountryDTO]:
         """

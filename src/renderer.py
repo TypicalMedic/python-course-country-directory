@@ -30,8 +30,9 @@ class Renderer:
 
         return (
             f"Страна: {self.location_info.location.name}",
-            f"Столица: {self.location_info.location.capital}",
+            f"Столица: {self.location_info.location.capital}, координаты: ({self.location_info.capital_location.lat}, {self.location_info.capital_location.lon})",
             f"Регион: {self.location_info.location.subregion}",
+            f"Площадь: {self.location_info.location.area} км^2",
             f"Языки: {await self._format_languages()}",
             f"Население страны: {await self._format_population()} чел.",
             f"Курсы валют: {await self._format_currency_rates()}",

@@ -21,6 +21,7 @@ from collectors.models import (
     CurrencyRatesDTO,
     CurrencyInfoDTO,
     WeatherInfoDTO,
+    CapitalInfoDTO,
 )
 from settings import (
     MEDIA_PATH,
@@ -90,6 +91,7 @@ class CountryCollector(BaseCollector):
             for item in items:
                 result_list.append(
                     CountryDTO(
+                        area=item["area"],
                         capital=item["capital"],
                         alpha2code=item["alpha2code"],
                         alt_spellings=item["alt_spellings"],
@@ -219,6 +221,45 @@ class WeatherCollector(BaseCollector):
                 humidity=result["main"]["humidity"],
                 wind_speed=result["wind"]["speed"],
                 description=result["weather"][0]["description"],
+            )
+
+        return None
+
+
+class CapitalCollector(BaseCollector):
+    """
+    Сбор информации о столицы страны.
+    """
+
+    def __init__(self) -> None:
+        self.client = WeatherClient()
+
+    @staticmethod
+    async def get_file_path(filename: str = "", **kwargs: Any) -> str:
+        return f"{MEDIA_PATH}/weather/{filename}.json"
+
+    @staticmethod
+    async def get_cache_ttl() -> int:
+        return CACHE_TTL_WEATHER
+
+    @classmethod
+    async def read(cls, location: LocationDTO) -> Optional[WeatherInfoDTO]:
+        """
+        Чтение данных из кэша.
+
+        :param location:
+        :return:
+        """
+
+        filename = f"{location.capital}_{location.alpha2code}".lower()
+        async with aiofiles.open(await cls.get_file_path(filename), mode="r") as file:
+            content = await file.read()
+
+        result = json.loads(content)
+        if result:
+            return CapitalInfoDTO(
+                lat=result["coord"]["lat"],
+                lon=result["coord"]["lon"],
             )
 
         return None
