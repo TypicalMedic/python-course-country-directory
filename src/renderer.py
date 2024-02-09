@@ -31,9 +31,9 @@ class Renderer:
         :return: Результат форматирования
         """
 
-        return await self._format_as_table()
+        return tuple(await self._format_as_table())
 
-    async def _format_as_table(self) -> tuple[str, ...]:
+    async def _format_as_table(self) -> list[str]:
         """
         Форматирование прочитанных данных в табличный формат.
 
@@ -121,7 +121,9 @@ class Renderer:
 
         :param table_string: строковое представление отфомратированной табличной информации
         :param column_groups_names: список названий групп колонок в порядке расположения в таблице
-        :param column_groups_length: список количества колонок, которые входят в каждую группу, длина списка должна быть равна длине списка названий, сумма всех значений должна быть равна количеству колонок в таблице
+        :param column_groups_length: список количества колонок, которые входят в каждую группу,
+        длина списка должна быть равна длине списка названий, сумма всех
+        значений должна быть равна количеству колонок в таблице
         :param corner_sep: символ угла в таблице
         :param column_sep: символ разделителя столбца в таблице
         :param row_char: символ разделителя строки в таблице
@@ -147,10 +149,20 @@ class Renderer:
             upper_boudary += (
                 f'{corner_sep}{"".join([row_char for ch in range(group_col_length)])}'
             )
-            empty_space_in_group_name = (
+            empty_space_in_gr_name_left = (
                 group_col_length - len(column_groups_names[i])
             ) // 2
-            group_col_names += f'{column_sep}{"".join([" " for ch in range(empty_space_in_group_name)])}{column_groups_names[i]}{"".join([" " for ch in range(group_col_length-len(column_groups_names[i])-empty_space_in_group_name)])}'
+            group_col_names += f'{column_sep}{"".join([" " for ch in range(empty_space_in_gr_name_left)])}'
+            group_col_names += f"{column_groups_names[i]}"
+            empty_space_in_gr_name_right = (
+                group_col_length
+                - len(column_groups_names[i])
+                - empty_space_in_gr_name_left
+            )
+            group_col_names += (
+                f'{"".join([" " for ch in range(empty_space_in_gr_name_right)])}'
+            )
+            col_index += column_groups_length[i]
             col_index += column_groups_length[i]
         upper_boudary += corner_sep
         group_col_names += column_sep
@@ -163,14 +175,18 @@ class Renderer:
 
         :return:
         """
-        capital_time_unix = (
-            self.location_info.capital_location.current_time_UTC
-            + self.location_info.capital_location.timezone
-        )
-        capital_time = datetime.datetime.utcfromtimestamp(capital_time_unix).strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
-        )
-        return f"{capital_time}"
+        if (
+            self.location_info.capital_location.timezone
+            and self.location_info.capital_location.current_time_UTC
+        ):
+            capital_time_unix = int(
+                self.location_info.capital_location.current_time_UTC
+            ) + int(self.location_info.capital_location.timezone)
+            capital_time = datetime.datetime.utcfromtimestamp(
+                capital_time_unix
+            ).strftime("%Y-%m-%dT%H:%M:%SZ")
+            return f"{capital_time}"
+        return "Информации о времени нет"
 
     async def _format_news(self) -> str:
         """
@@ -179,8 +195,12 @@ class Renderer:
         :return:
         """
         res = ""
-        for news in self.location_info.news.news:
-            res += f"Источнк: {news.source_name}\n{news.published_at}\n{news.author}: {news.title}\nURL:{news.url}\n\n"
+        if self.location_info.news.news:
+            for news in list(self.location_info.news.news):
+                res += (
+                    f"Источнк: {news.source_name}\n{news.published_at}\n{news.author}:"
+                )
+                res += f"{news.title}\nURL:{news.url}\n\n"
         return res
 
     async def _format_timezone(self) -> str:
@@ -190,8 +210,12 @@ class Renderer:
         :return:
         """
         seconds_in_hour = 3600
-        timezone_UTC = self.location_info.capital_location.timezone // seconds_in_hour
-        return f"UTC {timezone_UTC}"
+        if self.location_info.capital_location.timezone:
+            timezone_utc = (
+                int(self.location_info.capital_location.timezone) // seconds_in_hour
+            )
+            return f"UTC {timezone_utc}"
+        return "Информации о часовом поясе нет"
 
     async def _format_languages(self) -> str:
         """
