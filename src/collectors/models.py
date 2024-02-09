@@ -2,7 +2,7 @@
 Описание моделей данных (DTO).
 """
 
-from pydantic import Field, BaseModel 
+from pydantic import Field, BaseModel
 from pydantic.schema import Optional
 
 
@@ -168,7 +168,7 @@ class NewsInfoDTO(BaseModel):
             url = "https://address.com"
             published_at = "2024-02-08T12:12:08Z"
         )
-    
+
     """
 
     source_name: str
@@ -176,6 +176,7 @@ class NewsInfoDTO(BaseModel):
     title: str
     url: str
     published_at: str
+
 
 class ManyNewsInfoDTO(BaseModel):
     """
@@ -201,10 +202,11 @@ class ManyNewsInfoDTO(BaseModel):
                     ),
             ],
         )
-    
+
     """
 
     news: Optional[list[NewsInfoDTO]]
+
 
 class CapitalInfoDTO(BaseModel):
     """
@@ -281,13 +283,13 @@ class LocationInfoDTO(BaseModel):
                             title = "news title1"
                             url = "https://address.com1"
                             published_at = "2024-02-08T12:12:08Z"
-                        ), 
+                        ),
                         NewsInfoDTO(
                             source_name = "source name2"
                             author = "author name2"
                             title = "news title2"
                             url = "https://address.com2"
-                            published_at = "2024-02-08T12:12:08Z"   
+                            published_at = "2024-02-08T12:12:08Z"
                         )
                 ]
             )

@@ -2,6 +2,7 @@
 Функции для взаимодействия с внешним сервисом-провайдером данных о погоде.
 """
 from http import HTTPStatus
+import logging
 from typing import Optional
 
 import aiohttp
@@ -23,6 +24,7 @@ class NewsClient(BaseClient):
 
         async with aiohttp.ClientSession(trace_configs=[trace_config]) as session:
             async with session.get(endpoint) as response:
+                logging.info(response.status)
                 if response.status == HTTPStatus.OK:
                     return await response.json()
 

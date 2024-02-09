@@ -165,6 +165,7 @@ class CurrencyRatesCollector(BaseCollector):
 
         return None
 
+
 class NewsCollector(BaseCollector):
     """
     Сбор информации о новостях стран.
@@ -194,9 +195,7 @@ class NewsCollector(BaseCollector):
             filename = f"{location.capital}_{location.alpha2code}".lower()
             if await self.cache_invalid(filename=filename):
                 # если кэш уже невалиден, то актуализируем его
-                result = await self.client.get_news(
-                    f"{location.alpha2code}".lower()
-                )
+                result = await self.client.get_news(f"{location.alpha2code}".lower())
                 if result:
                     result_str = json.dumps(result)
                     async with aiofiles.open(
@@ -227,7 +226,7 @@ class NewsCollector(BaseCollector):
                         author=article["author"],
                         title=article["title"],
                         url=article["url"],
-                        published_at=article["publishedAt"]
+                        published_at=article["publishedAt"],
                     )
                     for article in result[:3]
                 ]
@@ -332,7 +331,7 @@ class CapitalCollector(BaseCollector):
             content = await file.read()
 
         result = json.loads(content)
-        
+
         if result:
             return CapitalInfoDTO(
                 lat=result["coord"]["lat"],

@@ -1,6 +1,7 @@
 """
 Базовые функции сборщиков информации о странах.
 """
+import logging
 import time
 from abc import ABC, abstractmethod
 from typing import Iterable, Any, Optional
@@ -37,7 +38,8 @@ class BaseCollector(ABC):
         """
 
         file_path = await self.get_file_path(**kwargs)
-
+        logging.info(await self.get_cache_ttl())
+        logging.info(time.time() - await aiofiles.os.path.getmtime(file_path))
         if (
             # проверка существования файла
             # (если файл не существует)

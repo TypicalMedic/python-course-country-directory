@@ -6,20 +6,20 @@ from difflib import SequenceMatcher
 from typing import Optional
 
 from collectors.collector import (
+    CapitalCollector,
     CountryCollector,
     CurrencyRatesCollector,
-    WeatherCollector,
-    CapitalCollector,
     NewsCollector,
+    WeatherCollector,
 )
 from collectors.models import (
+    CapitalInfoDTO,
     CountryDTO,
     CurrencyInfoDTO,
     LocationDTO,
     LocationInfoDTO,
-    WeatherInfoDTO,
-    CapitalInfoDTO,
     ManyNewsInfoDTO,
+    WeatherInfoDTO,
 )
 
 
@@ -54,7 +54,7 @@ class Reader:
                 weather=weather,
                 currency_rates=currency_rates,
                 capital_location=capital,
-                news=news
+                news=news,
             )
 
         return None
@@ -87,7 +87,6 @@ class Reader:
         """
         return await WeatherCollector.read(location=location)
 
-
     @staticmethod
     async def get_news(location: LocationDTO) -> Optional[ManyNewsInfoDTO]:
         """
@@ -97,7 +96,7 @@ class Reader:
         :return:
         """
         return await NewsCollector.read(location=location)
-    
+
     @staticmethod
     async def get_capital_location(location: LocationDTO) -> Optional[CapitalInfoDTO]:
         """
