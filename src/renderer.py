@@ -3,6 +3,7 @@
 """
 
 import datetime
+from prettytable import PrettyTable
 from decimal import ROUND_HALF_UP, Decimal
 
 from collectors.models import LocationInfoDTO
@@ -30,23 +31,63 @@ class Renderer:
         """
 
         return (
-            f"Страна: {self.location_info.location.name}",
-            f"Столица: {self.location_info.location.capital}",
-            f"  Координаты: ({self.location_info.capital_location.lat}, {self.location_info.capital_location.lon})",
-            f"  {await self._format_time()}",
-            f"Регион: {self.location_info.location.subregion}",
-            f"Площадь: {self.location_info.location.area} км^2",
-            f"Языки: {await self._format_languages()}",
-            f"Население страны: {await self._format_population()} чел.",
-            f"Курсы валют: {await self._format_currency_rates()}",
-            f"Погода:",
-            f"  Описание: {self.location_info.weather.description}",
-            f"  Температура: {self.location_info.weather.temp} °C",
-            f"  Видимость: {self.location_info.weather.visibility} м",
-            f"  Скорость ветра: {self.location_info.weather.wind_speed} м/с",
+           await self._format_as_table()
         )
 
     
+    async def _format_as_table(self) -> tuple[str, ...]:
+        table = PrettyTable()
+        table.field_names = ["Название", "Регион", "Площадь (м^2)", "Языки", "Население (чел.)", "Название столицы", "Координаты", "Текущее время", "Часовой пояс", "Курсы валют (руб.)", "Описание", "Температура (°C)", "Видимость (м)", "Скорость ветра (м/с)"]
+        table.add_row([
+            await self.split_country_name(self.location_info.location.name),
+            self.location_info.location.subregion,
+            self.location_info.location.area,
+            await self._format_languages(),
+            await self._format_population(),
+            self.location_info.location.capital,
+            f"({self.location_info.capital_location.lat}, {self.location_info.capital_location.lon})",
+            await self._format_time(),
+            await self._format_timezone(),
+            await self._format_currency_rates(),
+            self.location_info.weather.description,
+            self.location_info.weather.temp,
+            self.location_info.weather.visibility,
+            self.location_info.weather.wind_speed
+        ])
+        groups = await self._format_table_groups(table.get_string(), ["Страна", "Столица", "Валюта", "Погода"], [5, 4, 1, 4], '+', '|', '-')
+        return [groups, table.get_string()]
+
+    async def split_country_name(self, country_name: str) -> str:
+        space_pos = -1
+        mid_pos = len(country_name) // 2
+        for i in range(mid_pos, len(country_name)):
+            if country_name[i] == " ":
+                space_pos = i
+                break
+        if (space_pos == -1):
+            return country_name
+        return country_name[:space_pos] + "\n" + country_name[space_pos + 1: len(country_name)]
+
+    async def _format_table_groups(self, table_string: str, column_groups_names: list[str], column_groups_length: list[int], corner_sep: str, column_sep: str, row_char: str) -> str:        
+        cols = table_string.split('\n')[0].split(corner_sep)[1:]
+        column_lengths = [len(c) for c in cols]
+        res = ""
+        upper_boudary = ""
+        group_col_names = ""
+        col_index = 0
+        for i in range(len(column_groups_length)):
+            group_col_length = sum([column_lengths[ci] for ci in range(col_index, column_groups_length[i] + col_index)])
+            inner_corner_sep_amount = column_groups_length[i]-1
+            group_col_length += inner_corner_sep_amount
+            upper_boudary += f'{corner_sep}{"".join([row_char for ch in range(group_col_length)])}'
+            empty_space_in_group_name = (group_col_length-len(column_groups_names[i]))//2
+            group_col_names += f'{column_sep}{"".join([" " for ch in range(empty_space_in_group_name)])}{column_groups_names[i]}{"".join([" " for ch in range(group_col_length-len(column_groups_names[i])-empty_space_in_group_name)])}'
+            col_index += column_groups_length[i]
+        upper_boudary += corner_sep
+        group_col_names+= column_sep
+        res = f'{upper_boudary}\n{group_col_names}'
+        return res
+
     async def _format_time(self) -> str:
         """
         Форматирование информации о времени в столице.
@@ -55,9 +96,19 @@ class Renderer:
         """
         capital_time_unix = self.location_info.capital_location.current_time_UTC + self.location_info.capital_location.timezone
         capital_time = datetime.datetime.utcfromtimestamp(capital_time_unix).strftime('%Y-%m-%dT%H:%M:%SZ')
+        return f"{capital_time}"
+
+
+
+    async def _format_timezone(self) -> str:
+        """
+        Форматирование информации о часовом поясе в столице.
+
+        :return:
+        """
         seconds_in_hour = 3600
         timezone_UTC = self.location_info.capital_location.timezone//seconds_in_hour
-        return f"Время в столице: {capital_time} (UTC {timezone_UTC})"
+        return f"UTC {timezone_UTC}"
 
 
     async def _format_languages(self) -> str:
@@ -67,7 +118,7 @@ class Renderer:
         :return:
         """
 
-        return ", ".join(
+        return ",\n".join(
             f"{item.name} ({item.native_name})"
             for item in self.location_info.location.languages
         )
@@ -89,7 +140,7 @@ class Renderer:
         :return:
         """
 
-        return ", ".join(
-            f"{currency} = {Decimal(rates).quantize(exp=Decimal('.01'), rounding=ROUND_HALF_UP)} руб."
+        return ",\n".join(
+            f"{currency} = {Decimal(rates).quantize(exp=Decimal('.01'), rounding=ROUND_HALF_UP)}"
             for currency, rates in self.location_info.currency_rates.items()
         )
