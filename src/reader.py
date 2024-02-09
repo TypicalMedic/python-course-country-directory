@@ -6,15 +6,19 @@ from difflib import SequenceMatcher
 from typing import Optional
 
 from collectors.collector import (
+    CapitalCollector,
     CountryCollector,
     CurrencyRatesCollector,
+    NewsCollector,
     WeatherCollector,
 )
 from collectors.models import (
+    CapitalInfoDTO,
     CountryDTO,
     CurrencyInfoDTO,
     LocationDTO,
     LocationInfoDTO,
+    ManyNewsInfoDTO,
     WeatherInfoDTO,
 )
 
@@ -37,12 +41,20 @@ class Reader:
             weather = await self.get_weather(
                 LocationDTO(capital=country.capital, alpha2code=country.alpha2code)
             )
+            news = await self.get_news(
+                LocationDTO(capital=country.capital, alpha2code=country.alpha2code)
+            )
+            capital = await self.get_capital_location(
+                LocationDTO(capital=country.capital, alpha2code=country.alpha2code)
+            )
             currency_rates = await self.get_currency_rates(country.currencies)
 
             return LocationInfoDTO(
                 location=country,
                 weather=weather,
                 currency_rates=currency_rates,
+                capital_location=capital,
+                news=news,
             )
 
         return None
@@ -74,6 +86,26 @@ class Reader:
         :return:
         """
         return await WeatherCollector.read(location=location)
+
+    @staticmethod
+    async def get_news(location: LocationDTO) -> Optional[ManyNewsInfoDTO]:
+        """
+        Получение данных о новостях.
+
+        :param location: Объект локации для получения данных
+        :return:
+        """
+        return await NewsCollector.read(location=location)
+
+    @staticmethod
+    async def get_capital_location(location: LocationDTO) -> Optional[CapitalInfoDTO]:
+        """
+        Получение данных о погоде.
+
+        :param location: Объект локации для получения данных
+        :return:
+        """
+        return await CapitalCollector.read(location=location)
 
     async def find_country(self, search: str) -> Optional[CountryDTO]:
         """

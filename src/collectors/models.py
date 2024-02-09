@@ -3,6 +3,7 @@
 """
 
 from pydantic import Field, BaseModel
+from pydantic.schema import Optional
 
 
 class HashableBaseModel(BaseModel):
@@ -67,6 +68,7 @@ class CountryDTO(BaseModel):
     .. code-block::
 
         CountryDTO(
+            area=124.0,
             capital="Mariehamn",
             alpha2code="AX",
             alt_spellings=[
@@ -96,6 +98,7 @@ class CountryDTO(BaseModel):
         )
     """
 
+    area: Optional[float]
     capital: str
     alpha2code: str
     alt_spellings: list[str]
@@ -140,6 +143,7 @@ class WeatherInfoDTO(BaseModel):
             humidity=54,
             wind_speed=4.63,
             description="scattered clouds",
+            visibility=1000
         )
     """
 
@@ -148,6 +152,80 @@ class WeatherInfoDTO(BaseModel):
     humidity: int
     wind_speed: float
     description: str
+    visibility: int
+
+
+class NewsInfoDTO(BaseModel):
+    """
+    Модель данных о новости.
+
+    .. code-block::
+
+        NewsInfoDTO(
+            source_name = "source name"
+            author = "author name"
+            title = "news title"
+            url = "https://address.com"
+            published_at = "2024-02-08T12:12:08Z"
+        )
+
+    """
+
+    source_name: str
+    author: str
+    title: str
+    url: str
+    published_at: str
+
+
+class ManyNewsInfoDTO(BaseModel):
+    """
+    Модель данных о новостях.
+
+    .. code-block::
+
+        ManyNewsInfoDTO(
+            news=[
+                    NewsInfoDTO(
+                        source_name = "source name1"
+                        author = "author name1"
+                        title = "news title1"
+                        url = "https://address.com1"
+                        published_at = "2024-02-08T12:12:08Z"
+                    ),
+                    NewsInfoDTO(
+                        source_name = "source name2"
+                        author = "author name2"
+                        title = "news title2"
+                        url = "https://address.com2"
+                        published_at = "2024-02-08T12:12:08Z"
+                    ),
+            ],
+        )
+
+    """
+
+    news: Optional[list[NewsInfoDTO]]
+
+
+class CapitalInfoDTO(BaseModel):
+    """
+    Модель данных о столице.
+
+    .. code-block::
+
+        WeatherInfoDTO(
+            lon=1,
+            lat=1,
+            current_time_UTC=int,
+            timezone=int,
+        )
+    """
+
+    lon: float
+    lat: float
+    current_time_UTC: Optional[int]
+    timezone: Optional[int]
 
 
 class LocationInfoDTO(BaseModel):
@@ -158,6 +236,7 @@ class LocationInfoDTO(BaseModel):
 
         LocationInfoDTO(
             location=CountryDTO(
+                area=124.0,
                 capital="Mariehamn",
                 alpha2code="AX",
                 alt_spellings=[
@@ -191,13 +270,34 @@ class LocationInfoDTO(BaseModel):
                 humidity=54,
                 wind_speed=4.63,
                 description="scattered clouds",
+                visibility=1000
             ),
             currency_rates={
                 "EUR": 0.016503,
             },
+            news=ManyNewsInfoDTO(
+                news = [
+                        NewsInfoDTO(
+                            source_name = "source name1"
+                            author = "author name1"
+                            title = "news title1"
+                            url = "https://address.com1"
+                            published_at = "2024-02-08T12:12:08Z"
+                        ),
+                        NewsInfoDTO(
+                            source_name = "source name2"
+                            author = "author name2"
+                            title = "news title2"
+                            url = "https://address.com2"
+                            published_at = "2024-02-08T12:12:08Z"
+                        )
+                ]
+            )
         )
     """
 
     location: CountryDTO
     weather: WeatherInfoDTO
     currency_rates: dict[str, float]
+    capital_location: CapitalInfoDTO
+    news: ManyNewsInfoDTO

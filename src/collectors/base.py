@@ -37,7 +37,6 @@ class BaseCollector(ABC):
         """
 
         file_path = await self.get_file_path(**kwargs)
-
         if (
             # проверка существования файла
             # (если файл не существует)

@@ -31,12 +31,15 @@ Install the appropriate software:
     So it can be configured depending on the environment.
 
     To access the API, visit the appropriate resources and obtain an access token:
+    - APILayer – Fixer API (https://apilayer.com/marketplace/fixer-api)
     - APILayer – Geography API (https://apilayer.com/marketplace/geo-api)
     - OpenWeather – Weather Free Plan (https://openweathermap.org/price#weather)
+    - NewsAPI – News Free Plan (https://newsapi.org/)
    
     Set received access tokens as environment variable values (in `.env` file):
     - `API_KEY_APILAYER` – for APILayer access token
     - `API_KEY_OPENWEATHER` – for OpenWeather access token
+    - `API_KEY_NEWS` – for NewsAPI access token
 
 2. Build the container using Docker Compose:
     ```shell
@@ -62,6 +65,7 @@ Install the appropriate software:
     - `CACHE_TTL_COUNTRY` (country data up-to-date time in seconds)
     - `CACHE_TTL_CURRENCY_RATES` (currency rates data up-to-date time in seconds)
     - `CACHE_TTL_WEATHER` (weather data up-to-date time in seconds)
+    - `CACHE_TTL_NEWS` (news data up-to-date time in seconds)
    
 5. After collecting all the data, you can query the country information by executing the command:
     ```shell
