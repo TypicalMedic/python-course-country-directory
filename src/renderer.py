@@ -36,6 +36,12 @@ class Renderer:
 
     
     async def _format_as_table(self) -> tuple[str, ...]:
+        """
+        Форматирование прочитанных данных в табличный формат.
+
+        :return: Результат форматирования
+        """
+
         table = PrettyTable()
         table.field_names = ["Название", "Регион", "Площадь (м^2)", "Языки", "Население (чел.)", "Название столицы", "Координаты", "Текущее время", "Часовой пояс", "Курсы валют (руб.)", "Описание", "Температура (°C)", "Видимость (м)", "Скорость ветра (м/с)"]
         table.add_row([
@@ -54,7 +60,7 @@ class Renderer:
             self.location_info.weather.visibility,
             self.location_info.weather.wind_speed
         ])
-        groups = await self._format_table_groups(table.get_string(), ["Страна", "Столица", "Валюта", "Погода"], [5, 4, 1, 4], '+', '|', '-')
+        groups = await self._format_table_groups(table.get_string(), ["Страна", "Столица", "Валюта", "Погода"], [5, 4, 1, 4])
         return [
             groups, 
             table.get_string(),
@@ -63,6 +69,13 @@ class Renderer:
             ]
 
     async def split_country_name(self, country_name: str) -> str:
+        """
+        Разделение названия страны на 2 строки
+
+        :param country_name: Название страны
+        :return: Результат форматирования
+        """
+
         space_pos = -1
         mid_pos = len(country_name) // 2
         for i in range(mid_pos, len(country_name)):
@@ -73,7 +86,20 @@ class Renderer:
             return country_name
         return country_name[:space_pos] + "\n" + country_name[space_pos + 1: len(country_name)]
 
-    async def _format_table_groups(self, table_string: str, column_groups_names: list[str], column_groups_length: list[int], corner_sep: str, column_sep: str, row_char: str) -> str:        
+    async def _format_table_groups(self, table_string: str, column_groups_names: list[str], column_groups_length: list[int], corner_sep: str="+", column_sep: str="|", row_char: str="-") -> str:    
+        """
+        Создание колонок-названий групп по длине отформатированной таблицы
+
+        :param table_string: строковое представление отфомратированной табличной информации
+        :param column_groups_names: список названий групп колонок в порядке расположения в таблице
+        :param column_groups_length: список количества колонок, которые входят в каждую группу, длина списка должна быть равна длине списка названий, сумма всех значений должна быть равна количеству колонок в таблице
+        :param corner_sep: символ угла в таблице
+        :param column_sep: символ разделителя столбца в таблице
+        :param row_char: символ разделителя строки в таблице
+
+        :return: Результат форматирования
+        """
+    
         cols = table_string.split('\n')[0].split(corner_sep)[1:]
         column_lengths = [len(c) for c in cols]
         res = ""

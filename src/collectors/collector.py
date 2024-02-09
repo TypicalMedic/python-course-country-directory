@@ -84,7 +84,7 @@ class CountryCollector(BaseCollector):
         """
         Чтение данных из кэша.
 
-        :return:
+        :return: список стран
         """
 
         async with aiofiles.open(await cls.get_file_path(), mode="r") as file:
@@ -148,7 +148,7 @@ class CurrencyRatesCollector(BaseCollector):
         """
         Чтение данных из кэша.
 
-        :return:
+        :return: курс валют
         """
 
         async with aiofiles.open(await cls.get_file_path(), mode="r") as file:
@@ -209,8 +209,8 @@ class NewsCollector(BaseCollector):
         """
         Чтение данных из кэша.
 
-        :param location:
-        :return:
+        :param location: столица и сокращенное название страны
+        :return: 3 последних новости страны
         """
 
         filename = f"{location.capital}_{location.alpha2code}".lower()
@@ -280,8 +280,8 @@ class WeatherCollector(BaseCollector):
         """
         Чтение данных из кэша.
 
-        :param location:
-        :return:
+        :param location: столица и сокращенное название страны
+        :return: погода в столице
         """
 
         filename = f"{location.capital}_{location.alpha2code}".lower()
@@ -319,12 +319,12 @@ class CapitalCollector(BaseCollector):
         return CACHE_TTL_WEATHER
 
     @classmethod
-    async def read(cls, location: LocationDTO) -> Optional[WeatherInfoDTO]:
+    async def read(cls, location: LocationDTO) -> Optional[CapitalInfoDTO]:
         """
         Чтение данных из кэша.
 
-        :param location:
-        :return:
+        :param location: столица и сокращенное название страны
+        :return: информация о столице
         """
 
         filename = f"{location.capital}_{location.alpha2code}".lower()

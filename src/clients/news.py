@@ -13,7 +13,7 @@ from settings import API_KEY_NEWS
 
 class NewsClient(BaseClient):
     """
-    Реализация функций для взаимодействия с внешним сервисом-провайдером данных о погоде.
+    Реализация функций для взаимодействия с внешним сервисом-провайдером данных о новостях страны.
     """
 
     async def get_base_url(self) -> str:
@@ -32,7 +32,7 @@ class NewsClient(BaseClient):
         """
         Получение данных о погоде.
 
-        :param location: Город и страна
+        :param location: Сокращение страны
         :return:
         """
         return await self._request(

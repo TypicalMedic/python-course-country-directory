@@ -28,5 +28,5 @@ CACHE_TTL_COUNTRY: int = int(os.getenv("CACHE_TTL_COUNTRY", "31_536_000"))
 CACHE_TTL_CURRENCY_RATES: int = int(os.getenv("CACHE_TTL_CURRENCY_RATES", "86_400"))
 # время актуальности данных о погоде (в секундах), по умолчанию ~ три часа
 CACHE_TTL_WEATHER: int = int(os.getenv("CACHE_TTL_WEATHER", "10_700"))
-# время актуальности данных о погоде (в секундах), по умолчанию ~ час
+# время актуальности данных о новостях (в секундах), по умолчанию - час
 CACHE_TTL_NEWS: int = int(os.getenv("CACHE_TTL_NEWS", "3_600"))

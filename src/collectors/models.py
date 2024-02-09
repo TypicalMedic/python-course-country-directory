@@ -161,6 +161,13 @@ class NewsInfoDTO(BaseModel):
 
     .. code-block::
 
+        NewsInfoDTO(
+            source_name = "source name"
+            author = "author name"
+            title = "news title"
+            url = "https://address.com"
+            published_at = "2024-02-08T12:12:08Z"
+        )
     
     """
 
@@ -176,6 +183,24 @@ class ManyNewsInfoDTO(BaseModel):
 
     .. code-block::
 
+        ManyNewsInfoDTO(
+            news=[
+                    NewsInfoDTO(
+                        source_name = "source name1"
+                        author = "author name1"
+                        title = "news title1"
+                        url = "https://address.com1"
+                        published_at = "2024-02-08T12:12:08Z"
+                    ),
+                    NewsInfoDTO(
+                        source_name = "source name2"
+                        author = "author name2"
+                        title = "news title2"
+                        url = "https://address.com2"
+                        published_at = "2024-02-08T12:12:08Z"
+                    ),
+            ],
+        )
     
     """
 
@@ -243,10 +268,29 @@ class LocationInfoDTO(BaseModel):
                 humidity=54,
                 wind_speed=4.63,
                 description="scattered clouds",
+                visibility=1000
             ),
             currency_rates={
                 "EUR": 0.016503,
             },
+            news=ManyNewsInfoDTO(
+                news = [
+                        NewsInfoDTO(
+                            source_name = "source name1"
+                            author = "author name1"
+                            title = "news title1"
+                            url = "https://address.com1"
+                            published_at = "2024-02-08T12:12:08Z"
+                        ), 
+                        NewsInfoDTO(
+                            source_name = "source name2"
+                            author = "author name2"
+                            title = "news title2"
+                            url = "https://address.com2"
+                            published_at = "2024-02-08T12:12:08Z"   
+                        )
+                ]
+            )
         )
     """
 
