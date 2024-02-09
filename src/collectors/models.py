@@ -154,6 +154,33 @@ class WeatherInfoDTO(BaseModel):
     description: str
     visibility: int
 
+
+class NewsInfoDTO(BaseModel):
+    """
+    Модель данных о новости.
+
+    .. code-block::
+
+    
+    """
+
+    source_name: str
+    author: str
+    title: str
+    url: str
+    published_at: str
+
+class ManyNewsInfoDTO(BaseModel):
+    """
+    Модель данных о новостях.
+
+    .. code-block::
+
+    
+    """
+
+    news: Optional[list[NewsInfoDTO]]
+
 class CapitalInfoDTO(BaseModel):
     """
     Модель данных о столице.
@@ -226,4 +253,5 @@ class LocationInfoDTO(BaseModel):
     location: CountryDTO
     weather: WeatherInfoDTO
     currency_rates: dict[str, float]
-    capital_location : CapitalInfoDTO
+    capital_location: CapitalInfoDTO
+    news: ManyNewsInfoDTO

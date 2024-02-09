@@ -55,7 +55,12 @@ class Renderer:
             self.location_info.weather.wind_speed
         ])
         groups = await self._format_table_groups(table.get_string(), ["Страна", "Столица", "Валюта", "Погода"], [5, 4, 1, 4], '+', '|', '-')
-        return [groups, table.get_string()]
+        return [
+            groups, 
+            table.get_string(),
+            'Последние новости:',
+            await self._format_news()
+            ]
 
     async def split_country_name(self, country_name: str) -> str:
         space_pos = -1
@@ -98,7 +103,16 @@ class Renderer:
         capital_time = datetime.datetime.utcfromtimestamp(capital_time_unix).strftime('%Y-%m-%dT%H:%M:%SZ')
         return f"{capital_time}"
 
+    async def _format_news(self) -> str:
+        """
+        Форматирование информации о новости.
 
+        :return:
+        """
+        res = ""
+        for news in self.location_info.news.news:
+            res += f'Источнк: {news.source_name}\n{news.published_at}\n{news.author}: {news.title}\nURL:{news.url}\n\n'
+        return res
 
     async def _format_timezone(self) -> str:
         """
